@@ -28,13 +28,12 @@
     aria2
     jq
     rsync
-    uutils-coreutils
+    coreutils
     
     # Development tools
     nix-doc
     go
     zig
-    nodejs_24
     python312
     uv
     

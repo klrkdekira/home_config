@@ -6,7 +6,17 @@
 | brew search <pkg>       | nix-env -qaP <pkg>        | Search at search.nixos.org                      |
 | brew upgrade            | nix-env -u                | home-manager switch after channel update        |
 
-sudo nix-channel --update
-home-manager switch
+## Update nix
 
-sudo nix-channel --update && home-manager switch
+```bash
+$ sudo nix-channel --update
+$ home-manager switch
+
+or
+
+$ sudo nix-channel --update && home-manager switch
+```
+
+### Options
+
+https://nix-community.github.io/home-manager/options.xhtml

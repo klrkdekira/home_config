@@ -27,10 +27,10 @@
     fd
     tokei
     jq
-    uutils-coreutils
-    
+
     # Development tools
     nix-doc
+    fnm
     go
     zig
     uv
@@ -139,6 +139,8 @@
       if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
         source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
       fi
+
+      eval "$(fnm env --use-on-cd --shell zsh)"
     '';
   };
 }
