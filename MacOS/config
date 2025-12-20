@@ -1,0 +1,20 @@
+theme = "Monokai Pro"
+font-family = "MesloLGS NF"
+# font-family = Meslo LG M DZ for Powerline
+font-size = 13
+
+window-padding-x = 5
+window-padding-y = 0
+window-padding-y = 0
+window-height = 24
+window-decoration = client
+window-inherit-working-directory = true
+
+adjust-cell-height = 5%
+adjust-cursor-thickness = 2
+
+cursor-style = block
+cursor-style-blink = true
+
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title

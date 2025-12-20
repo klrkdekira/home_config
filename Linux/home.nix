@@ -3,8 +3,8 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "cheeleong";
-  home.homeDirectory = "/Users/cheeleong";
+  home.username = "klrkdekira";
+  home.homeDirectory = "/home/klrkdekira";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -15,7 +15,8 @@
   # release notes.
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
-  # Package installation
+  # The home.packages option allows you to install Nix packages into your
+  # environment.
   home.packages = with pkgs; [
     # Modern CLI replacements
     dust             # du replacement
@@ -25,30 +26,47 @@
     # CLI utilities
     fd
     tokei
-    aria2
     jq
-    rsync
     uutils-coreutils
     
     # Development tools
     nix-doc
     go
     zig
-    nodejs_24
-    python312
     uv
-    
-    # Container & cloud tools
-    kubectl
-    ollama
-    
-    # Network tools
-    curl
-    nmap
-    wget
   ];
 
-  # Environment configuration
+  # Home Manager is pretty good at managing dotfiles. The primary way to manage
+  # plain files is through 'home.file'.
+  home.file = {
+    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
+    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
+    # # symlink to the Nix store copy.
+    # ".screenrc".source = dotfiles/screenrc;
+
+    # # You can also set the file content immediately.
+    # ".gradle/gradle.properties".text = ''
+    #   org.gradle.console=verbose
+    #   org.gradle.daemon.idletimeout=3600000
+    # '';
+  };
+
+  # Home Manager can also manage your environment variables through
+  # 'home.sessionVariables'. These will be explicitly sourced when using a
+  # shell provided by Home Manager. If you don't want to manage your shell
+  # through Home Manager then you have to manually source 'hm-session-vars.sh'
+  # located at either
+  #
+  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+  #
+  # or
+  #
+  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
+  #
+  # or
+  #
+  #  /etc/profiles/per-user/klrkdekira/etc/profile.d/hm-session-vars.sh
+  #
   home.sessionVariables = {
     # Editor
     EDITOR = "emacs";
@@ -56,37 +74,21 @@
     
     # Go configuration
     CGO_ENABLED = "0";
-    GOPATH = "$HOME/Builds/go";
+    GOPATH = "$HOME/Builds/gopath";
     
     # Android SDK
-    ANDROID_HOME = "$HOME/Library/Android/sdk";
+    ANDROID_HOME = "$HOME/Android/Sdk";
   };
 
   home.sessionPath = [
-    "$HOME/.antigravity/antigravity/bin"
     "$ANDROID_HOME/platform-tools"
     "$ANDROID_HOME/tools"
     "$ANDROID_HOME/tools/bin"
     "$ANDROID_HOME/emulator"
   ];
 
-  # Dotfile management (currently unused)
-  home.file = {
-    # Example: ".screenrc".source = dotfiles/screenrc;
-  };
-
-  # Program configurations
+  # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-
-  programs.emacs = {
-    enable = true;
-    package = pkgs.emacs-nox;
-  };
-
-  programs.java = {
-    enable = true;
-    package = pkgs.temurin-jre-bin-17;
-  };
 
   programs.fzf = {
     enable = true;
@@ -109,6 +111,7 @@
 
   programs.zsh = {
     enable = true;
+    enableCompletion = true;
 
     oh-my-zsh = {
       enable = true;
@@ -117,11 +120,7 @@
     };
 
     shellAliases = {
-      # macOS-specific
-      tailscale = "/Applications/Tailscale.app/Contents/MacOS/Tailscale";
-      locate = "mdfind";
-      ldd = "otool -L";
-      
+      open = "xdg-open";
       # Modern CLI replacements
       cat = "bat -p";
       cp = "xcp";
@@ -132,6 +131,7 @@
 
     initContent = ''
       export GPG_TTY=$(tty)
+      source $HOME/.cargo/env
       export LANG=en_US.UTF-8
       export LC_CTYPE=en_US.UTF-8
       export LC_ALL=en_US.UTF-8
@@ -142,3 +142,4 @@
     '';
   };
 }
+

@@ -1,0 +1,22 @@
+theme = Monokai Pro
+font-family = Meslo LG M DZ for Powerline
+font-size = 10
+
+window-padding-x = 5
+window-padding-y = 0
+window-padding-y = 0
+window-height = 24
+window-decoration = client
+window-inherit-working-directory = true
+
+# keybind = performable:ctrl+c=copy_to_clipboard
+# keybind = performable:ctrl+v=paste_from_clipboard
+
+adjust-cell-height = 5%
+adjust-cursor-thickness = 2
+
+cursor-style = block
+cursor-style-blink = true
+
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
