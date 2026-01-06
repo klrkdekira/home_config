@@ -1,10 +1,8 @@
 theme = "Monokai Pro"
 font-family = "MesloLGS NF"
-# font-family = Meslo LG M DZ for Powerline
-font-size = 13
+font-size = 14
 
 window-padding-x = 5
-window-padding-y = 0
 window-padding-y = 0
 window-height = 24
 window-decoration = client

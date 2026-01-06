@@ -29,6 +29,7 @@
     jq
     rsync
     coreutils
+    cmake
     
     # Development tools
     nix-doc
@@ -37,6 +38,13 @@
     python312
     uv
     
+    # Rust toolchain
+    rustc
+    cargo
+    clippy
+    rustfmt
+    rust-analyzer
+
     # Container & cloud tools
     kubectl
     ollama
@@ -59,6 +67,9 @@
     
     # Android SDK
     ANDROID_HOME = "$HOME/Library/Android/sdk";
+
+    # Ollama host
+    OLLAMA_HOST = "apam"
   };
 
   home.sessionPath = [
