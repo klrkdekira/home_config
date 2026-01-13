@@ -26,6 +26,7 @@
     fd
     tokei
     aria2
+    btop
     jq
     rsync
     coreutils
@@ -35,16 +36,18 @@
     nix-doc
     go
     zig
+    nodejs_24
     python312
     uv
-    
+    cocoapods
+
     # Rust toolchain
     rustc
     cargo
     clippy
     rustfmt
     rust-analyzer
-
+    
     # Container & cloud tools
     kubectl
     ollama
@@ -53,6 +56,19 @@
     curl
     nmap
     wget
+
+    # # It is sometimes useful to fine-tune packages, for example, by applying
+    # # overrides. You can do that directly here, just don't forget the
+    # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
+    # # fonts?
+    # (pkgs.nerdfonts.override { fonts = [ "FantasqueSansMono" ]; })
+
+    # # You can also create simple shell scripts directly inside your
+    # # configuration. For example, this adds a command 'my-hello' to your
+    # # environment:
+    # (pkgs.writeShellScriptBin "my-hello" ''
+    #   echo "Hello, ${config.home.username}!"
+    # '')
   ];
 
   # Environment configuration
@@ -67,13 +83,11 @@
     
     # Android SDK
     ANDROID_HOME = "$HOME/Library/Android/sdk";
-
-    # Ollama host
-    OLLAMA_HOST = "apam"
   };
 
   home.sessionPath = [
     "$HOME/.antigravity/antigravity/bin"
+    "$HOME/SDKs/flutter/bin"
     "$ANDROID_HOME/platform-tools"
     "$ANDROID_HOME/tools"
     "$ANDROID_HOME/tools/bin"
@@ -151,4 +165,3 @@
       fi
     '';
   };
-}

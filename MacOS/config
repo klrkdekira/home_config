@@ -2,11 +2,12 @@ theme = "Monokai Pro"
 font-family = "MesloLGS NF"
 font-size = 14
 
-window-padding-x = 5
+window-padding-x = 8
 window-padding-y = 0
 window-height = 24
 window-decoration = client
 window-inherit-working-directory = true
+background-opacity = 0.95
 
 adjust-cell-height = 5%
 adjust-cursor-thickness = 2
@@ -16,3 +17,4 @@ cursor-style-blink = true
 
 shell-integration = zsh
 shell-integration-features = cursor,sudo,title
+macos-option-as-alt = true
