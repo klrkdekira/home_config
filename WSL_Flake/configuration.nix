@@ -13,12 +13,8 @@
 }:
 
 {
-  imports = [
-    # include NixOS-WSL modules
-    <nixos-wsl/modules>
-    # Home Manager module
-    <home-manager/nixos>
-  ];
+  # Modules (nixos-wsl, home-manager) are imported via flake.nix
+  imports = [ ];
 
   # Home Manager configuration for cheeleong
   home-manager.users.cheeleong =
