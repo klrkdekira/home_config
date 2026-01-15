@@ -18,10 +18,10 @@
   # Package installation
   home.packages = with pkgs; [
     # Modern CLI replacements
-    dust             # du replacement
-    ripgrep          # grep replacement
-    xcp              # cp replacement
-    
+    dust # du replacement
+    ripgrep # grep replacement
+    xcp # cp replacement
+
     # CLI utilities
     fd
     tokei
@@ -31,15 +31,24 @@
     rsync
     coreutils
     cmake
-    
+
     # Development tools
     nix-doc
+    nixfmt
     go
     zig
+    zls # zig language server
     nodejs_24
     python312
     uv
     cocoapods
+
+    # Haskell Toolchain
+    # ghc
+    # cabal-install
+    # haskell-language-server
+    # stack
+    # haskellPackages.hoogle
 
     # Rust toolchain
     rustc
@@ -47,11 +56,11 @@
     clippy
     rustfmt
     rust-analyzer
-    
+
     # Container & cloud tools
     kubectl
     ollama
-    
+
     # Network tools
     curl
     nmap
@@ -76,11 +85,11 @@
     # Editor
     EDITOR = "emacs";
     TERM = "xterm-256color";
-    
+
     # Go configuration
     CGO_ENABLED = "0";
     GOPATH = "$HOME/Builds/go";
-    
+
     # Android SDK
     ANDROID_HOME = "$HOME/Library/Android/sdk";
   };
@@ -145,7 +154,7 @@
       tailscale = "/Applications/Tailscale.app/Contents/MacOS/Tailscale";
       locate = "mdfind";
       ldd = "otool -L";
-      
+
       # Modern CLI replacements
       cat = "bat -p";
       cp = "xcp";
@@ -165,3 +174,4 @@
       fi
     '';
   };
+}
