@@ -1,9 +1,5 @@
-# Edit this configuration file to define what should be installed on
-# your system. Help is available in the configuration.nix(5) man page, on
-# https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-# NixOS-WSL specific options are documented on the NixOS-WSL repository:
-# https://github.com/nix-community/NixOS-WSL
+# NixOS-WSL config
+# Docs: https://github.com/nix-community/NixOS-WSL
 
 {
   config,
@@ -14,13 +10,10 @@
 
 {
   imports = [
-    # include NixOS-WSL modules
     <nixos-wsl/modules>
-    # Home Manager module
     <home-manager/nixos>
   ];
 
-  # Home Manager configuration for cheeleong
   home-manager.users.cheeleong =
     { pkgs, ... }:
     {
@@ -30,7 +23,6 @@
         enable = true;
         enableCompletion = true;
 
-        # History settings
         history = {
           size = 10000;
           save = 10000;
@@ -39,32 +31,22 @@
           share = true;
         };
 
-        # Extra initialization in .zshrc
         initContent = ''
-          # Custom prompt modifications or additional config can go here
-
-          # Enable vim mode if desired
-          # bindkey -v
-
-          # Path additions
           export PATH="$HOME/.local/bin:$PATH"
         '';
 
-        # Environment variables specific to zsh session
         sessionVariables = {
           EDITOR = "emacs";
           TERM = "xterm-256color";
         };
       };
 
-      # Enable direnv integration with zsh
       programs.direnv = {
         enable = true;
         enableZshIntegration = true;
         nix-direnv.enable = true;
       };
 
-      # Enable fzf integration with zsh
       programs.fzf = {
         enable = true;
         enableZshIntegration = true;
@@ -75,13 +57,10 @@
   wsl.enable = true;
   wsl.defaultUser = "cheeleong";
 
-  # WSL interop settings (running Windows executables from Linux)
   wsl.interop.register = true;
   wsl.interop.includePath = true;
 
-  # wsl.conf settings (these generate /etc/wsl.conf)
   wsl.wslConf = {
-    # Automount Windows drives at /mnt/c, /mnt/d, etc.
     automount = {
       enabled = true;
       root = "/mnt";
@@ -89,31 +68,25 @@
       mountFsTab = false; # Disable to avoid fstab processing errors
     };
 
-    # Interop settings for Windows executable support
     interop = {
       enabled = true;
       appendWindowsPath = true;
     };
 
-    # Network settings
     network = {
       generateHosts = true;
       generateResolvConf = true;
     };
 
-    # User settings
     user = {
       default = "cheeleong";
     };
   };
 
-  # Enable Docker Desktop integration
   wsl.docker-desktop.enable = true;
 
-  # Required binaries for Docker Desktop, WSL functionality, and remote development tools
-  # These are exposed at /bin/* for scripts that run before PATH is set up
+  # Binaries exposed at /bin/* for early boot scripts
   wsl.extraBin = with pkgs; [
-    # Core utilities (from coreutils)
     { src = "${coreutils}/bin/cat"; }
     { src = "${coreutils}/bin/whoami"; }
     { src = "${coreutils}/bin/mkdir"; }
@@ -148,29 +121,23 @@
     { src = "${util-linux}/bin/umount"; }
     { src = "${util-linux}/bin/flock"; }
 
-    # Find utilities
     { src = "${findutils}/bin/find"; }
     { src = "${findutils}/bin/xargs"; }
 
-    # Text processing
     { src = "${gnused}/bin/sed"; }
     { src = "${gnugrep}/bin/grep"; }
     { src = "${gawk}/bin/awk"; }
 
-    # Archive utilities
     { src = "${gnutar}/bin/tar"; }
     { src = "${gzip}/bin/gzip"; }
     { src = "${gzip}/bin/gunzip"; }
 
-    # Network utilities
     { src = "${wget}/bin/wget"; }
     { src = "${curl}/bin/curl"; }
 
-    # Other essential utilities
     { src = "${which}/bin/which"; }
     { src = "${glibc.bin}/bin/ldd"; }
 
-    # Process utilities (from procps)
     { src = "${procps}/bin/ps"; }
     { src = "${procps}/bin/pgrep"; }
     { src = "${procps}/bin/pkill"; }
@@ -184,11 +151,9 @@
       "flakes"
     ];
 
-    # Use multiple binary caches for faster downloads
-    # TUNA mirror is fast for Asia, nix-community has many packages
     substituters = [
       "https://cache.nixos.org"
-      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store" # Fast in Asia
+      "https://mirrors.tuna.tsinghua.edu.cn/nix-channels/store"
       "https://nix-community.cachix.org"
       "https://cuda-maintainers.cachix.org"
     ];
@@ -199,23 +164,20 @@
       "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
 
-    # Download from multiple caches in parallel
     max-substitution-jobs = 8;
 
-    # Connect to substituters in parallel
     http-connections = 50;
   };
 
-  # Allow unfree packages (required for CUDA)
+  # CUDA needs unfree
   nixpkgs.config = {
     allowUnfree = true;
     cudaSupport = true;
   };
 
-  # Enable nix-ld for running dynamically linked executables (like nvidia-smi)
+  # nix-ld for dynamically linked binaries
   programs.nix-ld = {
     enable = true;
-    # Libraries needed for CUDA and common dynamically linked binaries
     libraries = with pkgs; [
       stdenv.cc.cc.lib
       zlib
@@ -226,7 +188,6 @@
     ];
   };
 
-  # User configuration
   users.users.cheeleong = {
     isNormalUser = true;
     extraGroups = [
@@ -236,12 +197,10 @@
     shell = pkgs.zsh;
   };
 
-  # Enable hardware acceleration
   hardware.graphics.enable = true;
 
-  # System-wide packages
   environment.systemPackages = with pkgs; [
-    # Essential base utilities (required for SSH/remote development)
+    # Base utilities for SSH/remote dev
     coreutils # cat, basename, head, wc, readlink, mktemp, etc.
     findutils # find, xargs
     gnused # sed
@@ -284,18 +243,18 @@
         virtualenv
       ]
     ))
-    uv # Modern Python package manager
+    uv
 
     # Go
     go
-    gopls # Go language server
+    gopls
 
     # Rust
     rustc
     cargo
     rustfmt
     clippy
-    rust-analyzer # Rust language server
+    rust-analyzer
 
     # Other languages
     zig
@@ -310,7 +269,7 @@
     cmake
     gnumake
 
-    # Docker utilities (optional, Desktop provides core)
+    # Docker (Desktop provides core)
     docker-compose
     dive
 
@@ -319,31 +278,26 @@
     htop
   ];
 
-  # Environment variables for CUDA
   environment.variables = {
     CUDA_PATH = "${pkgs.cudaPackages.cudatoolkit}";
     CUDAHOSTCXX = "${pkgs.gcc13}/bin/g++";
     NVIDIA_DRIVER_CAPABILITIES = "compute,utility";
 
-    # From your home-manager config
     EDITOR = "emacs";
     TERM = "xterm-256color";
     CGO_ENABLED = "0";
   };
 
-  # Add CUDA binaries and WSL nvidia libs to PATH
   environment.extraInit = ''
     export PATH="/usr/lib/wsl/lib:${pkgs.cudaPackages.cuda_nvcc}/bin:$PATH"
     export LD_LIBRARY_PATH="/usr/lib/wsl/lib:''${LD_LIBRARY_PATH:-}"
   '';
 
-  # Enable and configure direnv globally
   programs.direnv = {
     enable = true;
     nix-direnv.enable = true;
   };
 
-  # Enable zsh
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -359,17 +313,10 @@
     '';
   };
 
-  # Enable fzf
   programs.fzf = {
     fuzzyCompletion = true;
     keybindings = true;
   };
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.05";
 }
