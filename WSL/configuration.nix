@@ -16,22 +16,165 @@
   imports = [
     # include NixOS-WSL modules
     <nixos-wsl/modules>
+    # Home Manager module
+    <home-manager/nixos>
   ];
+
+  # Home Manager configuration for cheeleong
+  home-manager.users.cheeleong =
+    { pkgs, ... }:
+    {
+      home.stateVersion = "25.05";
+
+      programs.zsh = {
+        enable = true;
+        enableCompletion = true;
+
+        # History settings
+        history = {
+          size = 10000;
+          save = 10000;
+          ignoreDups = true;
+          ignoreSpace = true;
+          share = true;
+        };
+
+        # Extra initialization in .zshrc
+        initContent = ''
+          # Custom prompt modifications or additional config can go here
+
+          # Enable vim mode if desired
+          # bindkey -v
+
+          # Path additions
+          export PATH="$HOME/.local/bin:$PATH"
+        '';
+
+        # Environment variables specific to zsh session
+        sessionVariables = {
+          EDITOR = "emacs";
+          TERM = "xterm-256color";
+        };
+      };
+
+      # Enable direnv integration with zsh
+      programs.direnv = {
+        enable = true;
+        enableZshIntegration = true;
+        nix-direnv.enable = true;
+      };
+
+      # Enable fzf integration with zsh
+      programs.fzf = {
+        enable = true;
+        enableZshIntegration = true;
+      };
+    };
 
   # WSL Configuration
   wsl.enable = true;
   wsl.defaultUser = "cheeleong";
 
+  # WSL interop settings (running Windows executables from Linux)
+  wsl.interop.register = true;
+  wsl.interop.includePath = true;
+
+  # wsl.conf settings (these generate /etc/wsl.conf)
+  wsl.wslConf = {
+    # Automount Windows drives at /mnt/c, /mnt/d, etc.
+    automount = {
+      enabled = true;
+      root = "/mnt";
+      options = "metadata,uid=1000,gid=1000,umask=22,fmask=11";
+      mountFsTab = false; # Disable to avoid fstab processing errors
+    };
+
+    # Interop settings for Windows executable support
+    interop = {
+      enabled = true;
+      appendWindowsPath = true;
+    };
+
+    # Network settings
+    network = {
+      generateHosts = true;
+      generateResolvConf = true;
+    };
+
+    # User settings
+    user = {
+      default = "cheeleong";
+    };
+  };
+
   # Enable Docker Desktop integration
   wsl.docker-desktop.enable = true;
 
-  # Docker Desktop required binaries
+  # Required binaries for Docker Desktop, WSL functionality, and remote development tools
+  # These are exposed at /bin/* for scripts that run before PATH is set up
   wsl.extraBin = with pkgs; [
+    # Core utilities (from coreutils)
     { src = "${coreutils}/bin/cat"; }
     { src = "${coreutils}/bin/whoami"; }
     { src = "${coreutils}/bin/mkdir"; }
-    { src = "${coreutils}/bin/mount"; }
     { src = "${coreutils}/bin/uname"; }
+    { src = "${coreutils}/bin/basename"; }
+    { src = "${coreutils}/bin/dirname"; }
+    { src = "${coreutils}/bin/head"; }
+    { src = "${coreutils}/bin/tail"; }
+    { src = "${coreutils}/bin/wc"; }
+    { src = "${coreutils}/bin/readlink"; }
+    { src = "${coreutils}/bin/mktemp"; }
+    { src = "${coreutils}/bin/rm"; }
+    { src = "${coreutils}/bin/cp"; }
+    { src = "${coreutils}/bin/mv"; }
+    { src = "${coreutils}/bin/ln"; }
+    { src = "${coreutils}/bin/ls"; }
+    { src = "${coreutils}/bin/chmod"; }
+    { src = "${coreutils}/bin/chown"; }
+    { src = "${coreutils}/bin/touch"; }
+    { src = "${coreutils}/bin/date"; }
+    { src = "${coreutils}/bin/sleep"; }
+    { src = "${coreutils}/bin/tr"; }
+    { src = "${coreutils}/bin/cut"; }
+    { src = "${coreutils}/bin/sort"; }
+    { src = "${coreutils}/bin/uniq"; }
+    { src = "${coreutils}/bin/tee"; }
+    { src = "${coreutils}/bin/env"; }
+    { src = "${coreutils}/bin/id"; }
+
+    # Mount utilities (from util-linux)
+    { src = "${util-linux}/bin/mount"; }
+    { src = "${util-linux}/bin/umount"; }
+    { src = "${util-linux}/bin/flock"; }
+
+    # Find utilities
+    { src = "${findutils}/bin/find"; }
+    { src = "${findutils}/bin/xargs"; }
+
+    # Text processing
+    { src = "${gnused}/bin/sed"; }
+    { src = "${gnugrep}/bin/grep"; }
+    { src = "${gawk}/bin/awk"; }
+
+    # Archive utilities
+    { src = "${gnutar}/bin/tar"; }
+    { src = "${gzip}/bin/gzip"; }
+    { src = "${gzip}/bin/gunzip"; }
+
+    # Network utilities
+    { src = "${wget}/bin/wget"; }
+    { src = "${curl}/bin/curl"; }
+
+    # Other essential utilities
+    { src = "${which}/bin/which"; }
+    { src = "${glibc.bin}/bin/ldd"; }
+
+    # Process utilities (from procps)
+    { src = "${procps}/bin/ps"; }
+    { src = "${procps}/bin/pgrep"; }
+    { src = "${procps}/bin/pkill"; }
+    { src = "${procps}/bin/kill"; }
   ];
 
   # Enable Nix flakes and modern commands
@@ -53,6 +196,20 @@
     cudaSupport = true;
   };
 
+  # Enable nix-ld for running dynamically linked executables (like nvidia-smi)
+  programs.nix-ld = {
+    enable = true;
+    # Libraries needed for CUDA and common dynamically linked binaries
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      curl
+      openssl
+      libGL
+      glib
+    ];
+  };
+
   # User configuration
   users.users.cheeleong = {
     isNormalUser = true;
@@ -68,6 +225,20 @@
 
   # System-wide packages
   environment.systemPackages = with pkgs; [
+    # Essential base utilities (required for SSH/remote development)
+    coreutils # cat, basename, head, wc, readlink, mktemp, etc.
+    findutils # find, xargs
+    gnused # sed
+    gnugrep # grep
+    gawk # awk
+    gnutar # tar
+    gzip # gzip, gunzip
+    util-linux # flock, mount, etc.
+    which # which command
+    file # file type detection
+    glibc # ldd and libc
+    procps # ps, pgrep, kill, etc.
+
     # Core utilities
     wget
     curl
