@@ -1,80 +1,87 @@
 { config, pkgs, ... }:
 
 {
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
   home.username = "cheeleong";
   home.homeDirectory = "/Users/cheeleong";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "25.11"; # Please read the comment before changing.
+  home.stateVersion = "25.11";
 
-  # Package installation
   home.packages = with pkgs; [
     # Modern CLI replacements
-    dust             # du replacement
-    ripgrep          # grep replacement
-    xcp              # cp replacement
-    
+    dust # du replacement
+    ripgrep # grep replacement
+    xcp # cp replacement
+
     # CLI utilities
     fd
     tokei
     aria2
+    btop
     jq
     rsync
     coreutils
-    
+    cmake
+
     # Development tools
     nix-doc
+    nixfmt
     go
     zig
+    zls # zig language server
+    nodejs_24
     python312
     uv
-    
+    cocoapods
+
+    # Haskell Toolchain
+    # ghc
+    # cabal-install
+    # haskell-language-server
+    # stack
+    # haskellPackages.hoogle
+
+    # Rust toolchain
+    rustc
+    cargo
+    clippy
+    rustfmt
+    rust-analyzer
+
     # Container & cloud tools
     kubectl
     ollama
-    
+
     # Network tools
     curl
     nmap
     wget
+
   ];
 
-  # Environment configuration
   home.sessionVariables = {
     # Editor
     EDITOR = "emacs";
     TERM = "xterm-256color";
-    
+
     # Go configuration
     CGO_ENABLED = "0";
     GOPATH = "$HOME/Builds/go";
-    
+
     # Android SDK
     ANDROID_HOME = "$HOME/Library/Android/sdk";
   };
 
   home.sessionPath = [
     "$HOME/.antigravity/antigravity/bin"
+    "$HOME/SDKs/flutter/bin"
     "$ANDROID_HOME/platform-tools"
     "$ANDROID_HOME/tools"
     "$ANDROID_HOME/tools/bin"
     "$ANDROID_HOME/emulator"
   ];
 
-  # Dotfile management (currently unused)
-  home.file = {
-    # Example: ".screenrc".source = dotfiles/screenrc;
-  };
+  home.file = { };
 
-  # Program configurations
   programs.home-manager.enable = true;
 
   programs.emacs = {
@@ -120,7 +127,7 @@
       tailscale = "/Applications/Tailscale.app/Contents/MacOS/Tailscale";
       locate = "mdfind";
       ldd = "otool -L";
-      
+
       # Modern CLI replacements
       cat = "bat -p";
       cp = "xcp";
