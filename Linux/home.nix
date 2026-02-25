@@ -1,34 +1,26 @@
 { config, pkgs, ... }:
 
+let
+  androidSdk = "${config.home.homeDirectory}/Android/Sdk";
+in
 {
-  # Home Manager needs a bit of information about you and the paths it should
-  # manage.
+  # Identity
   home.username = "klrkdekira";
   home.homeDirectory = "/home/klrkdekira";
+  home.stateVersion = "25.11";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
-  home.stateVersion = "25.11"; # Please read the comment before changing.
+  # XDG
+  xdg.enable = true;
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
+  # Packages
   home.packages = with pkgs; [
-    # Modern CLI replacements
-    dust             # du replacement
-    ripgrep          # grep replacement
-    xcp              # cp replacement
-    
-    # CLI utilities
+    dust
+    ripgrep
+    xcp
     fd
     tokei
     jq
-
-    # Development tools
+    btop
     nix-doc
     nixfmt
     fnm
@@ -38,68 +30,67 @@
     uv
   ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
+  home.file = { };
 
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-  };
-
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. These will be explicitly sourced when using a
-  # shell provided by Home Manager. If you don't want to manage your shell
-  # through Home Manager then you have to manually source 'hm-session-vars.sh'
-  # located at either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/klrkdekira/etc/profile.d/hm-session-vars.sh
-  #
+  # Environment
   home.sessionVariables = {
-    # Editor
     EDITOR = "emacs";
-    TERM = "xterm-256color";
     ZSH_DISABLE_COMPFIX = "true";
-    
-    # Go configuration
+    LANG = "en_US.UTF-8";
+    LC_CTYPE = "en_US.UTF-8";
+    LC_ALL = "en_US.UTF-8";
     CGO_ENABLED = "0";
     GOPATH = "$HOME/SDKs/gopath";
-    
-    # Android SDK
     ANDROID_HOME = "$HOME/Android/Sdk";
   };
 
+  # PATH additions
   home.sessionPath = [
     "${config.home.homeDirectory}/.local/bin"
     "${config.home.homeDirectory}/SDKs/flutter/bin"
-    "${config.home.homeDirectory}/Android/Sdk/platform-tools"
-    "${config.home.homeDirectory}/Android/Sdk/tools"
-    "${config.home.homeDirectory}/Android/Sdk/tools/bin"
-    "${config.home.homeDirectory}/Android/Sdk/emulator"
+    "${androidSdk}/platform-tools"
+    "${androidSdk}/tools"
+    "${androidSdk}/tools/bin"
+    "${androidSdk}/emulator"
   ];
 
-  # Let Home Manager install and manage itself.
+  # Programs
   programs.home-manager.enable = true;
 
+  # Git with SSH commit signing
+  programs.git = {
+    enable = true;
+    settings = {
+      user = {
+        name = "Chee Leong";
+        email = "klrkdekira@gmail.com";
+        signingkey = "~/.ssh/id_ed25519.pub";
+      };
+      init.defaultBranch = "main";
+      pull.rebase = false;
+      gpg.format = "ssh";
+      commit.gpgsign = true;
+      tag.gpgsign = true;
+    };
+  };
+
+  # Per-project environments via .envrc
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  # Fuzzy finder (uses fd)
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    defaultCommand = "fd --type f";
+    changeDirWidgetCommand = "fd --type d";
+    fileWidgetCommand = "fd --type f";
   };
 
+  # ls replacement
   programs.eza = {
     enable = true;
     enableZshIntegration = true;
@@ -108,6 +99,7 @@
     icons = "auto";
   };
 
+  # cat replacement
   programs.bat = {
     enable = true;
     config = {
@@ -115,9 +107,14 @@
     };
   };
 
+  # Shell
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    dotDir = "${config.xdg.configHome}/zsh";
+
+    syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
 
     oh-my-zsh = {
       enable = true;
@@ -125,9 +122,9 @@
       theme = "tjkirch";
     };
 
+    # Aliases
     shellAliases = {
       open = "xdg-open";
-      # Modern CLI replacements
       cat = "bat -p";
       cp = "xcp";
       du = "dust";
@@ -137,11 +134,8 @@
 
     initContent = ''
       export GPG_TTY=$(tty)
+
       source $HOME/.cargo/env
-      export LANG=en_US.UTF-8
-      export LC_CTYPE=en_US.UTF-8
-      export LC_ALL=en_US.UTF-8
-      export PATH="$HOME/.local/bin:$PATH"
 
       if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
         source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration

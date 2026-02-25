@@ -1,19 +1,32 @@
-theme = "Monokai Pro"
-font-family = "MesloLGS NF"
+theme = Monokai Pro
+font-family = MesloLGS NF
 font-size = 14
+font-thicken = true
+bold-color = bright
 
 window-padding-x = 8
 window-padding-y = 0
 window-height = 24
 window-decoration = client
 window-inherit-working-directory = true
+window-save-state = always
 background-opacity = 0.95
+background-blur = 20
+minimum-contrast = 1.1
+
+# copy-on-select = clipboard
+clipboard-paste-protection = true
 
 adjust-cell-height = 5%
 adjust-cursor-thickness = 2
 
 cursor-style = block
-cursor-style-blink = true
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+scrollback-limit = 100000
+confirm-close-surface = false
+resize-overlay = never
 
 shell-integration = zsh
 shell-integration-features = cursor,sudo,title
