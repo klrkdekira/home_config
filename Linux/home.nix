@@ -30,9 +30,11 @@
 
     # Development tools
     nix-doc
+    nixfmt
     fnm
     go
     zig
+    # zls
     uv
   ];
 
@@ -71,20 +73,23 @@
     # Editor
     EDITOR = "emacs";
     TERM = "xterm-256color";
+    ZSH_DISABLE_COMPFIX = "true";
     
     # Go configuration
     CGO_ENABLED = "0";
-    GOPATH = "$HOME/Builds/gopath";
+    GOPATH = "$HOME/SDKs/gopath";
     
     # Android SDK
     ANDROID_HOME = "$HOME/Android/Sdk";
   };
 
   home.sessionPath = [
-    "$ANDROID_HOME/platform-tools"
-    "$ANDROID_HOME/tools"
-    "$ANDROID_HOME/tools/bin"
-    "$ANDROID_HOME/emulator"
+    "${config.home.homeDirectory}/.local/bin"
+    "${config.home.homeDirectory}/SDKs/flutter/bin"
+    "${config.home.homeDirectory}/Android/Sdk/platform-tools"
+    "${config.home.homeDirectory}/Android/Sdk/tools"
+    "${config.home.homeDirectory}/Android/Sdk/tools/bin"
+    "${config.home.homeDirectory}/Android/Sdk/emulator"
   ];
 
   # Let Home Manager install and manage itself.
@@ -98,6 +103,7 @@
   programs.eza = {
     enable = true;
     enableZshIntegration = true;
+    enableBashIntegration = true;
     git = true;
     icons = "auto";
   };
@@ -135,6 +141,7 @@
       export LANG=en_US.UTF-8
       export LC_CTYPE=en_US.UTF-8
       export LC_ALL=en_US.UTF-8
+      export PATH="$HOME/.local/bin:$PATH"
 
       if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
         source "$GHOSTTY_RESOURCES_DIR"/shell-integration/zsh/ghostty-integration
@@ -144,4 +151,3 @@
     '';
   };
 }
-
