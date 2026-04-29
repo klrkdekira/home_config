@@ -10,12 +10,19 @@ in
 
   home.stateVersion = "25.11"; # Do not change without reading release notes.
 
+  # Skip building `man home-configuration.nix`. Avoids an upstream nixpkgs
+  # warning about `options.json` and `unsafeDiscardStringContext` under
+  # newer Nix, and shrinks the generation. Online docs are the reference.
+  manual.manpages.enable = false;
+
   # Package installation
   home.packages = with pkgs; [
     # Modern CLI replacements
     dust # du replacement
     ripgrep # grep replacement
     xcp # cp replacement
+    graphviz-nox # for generating diagrams with graphviz
+    zstd # for faster compression/decompression
 
     # CLI utilities
     fd
@@ -26,6 +33,7 @@ in
     rsync
     coreutils
     cmake
+    opencode
 
     # Development tools
     nixfmt
@@ -90,6 +98,7 @@ in
     "${androidHome}/tools/bin"
     "${androidHome}/emulator"
     "${homeDir}/.krew/bin"
+    "${homeDir}/.opencode/bin"
   ];
 
   home.file = { };
@@ -136,6 +145,7 @@ in
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true; # cached nix shell evaluation
+    package = pkgs.direnv.overrideAttrs (_: { doCheck = false; });
   };
 
   programs.zoxide = {
@@ -162,17 +172,60 @@ in
     };
   };
 
+  programs.starship = {
+    enable = true;
+    settings = {
+      format = "$time $username$hostname $directory$git_branch$git_status\n$character";
+
+      time = {
+        disabled = false;
+        format = "[$time]($style)";
+        style = "bold yellow";
+        time_format = "%H:%M:%S";
+      };
+
+      username = {
+        show_always = true;
+        format = "[$user]($style)";
+        style_user = "bold cyan";
+        style_root = "bold red";
+      };
+
+      hostname = {
+        ssh_only = false;
+        format = "@[$hostname]($style)";
+        style = "bold cyan";
+      };
+
+      directory = {
+        truncation_length = 3;
+        truncate_to_repo = false;
+        style = "bold blue";
+      };
+
+      git_branch = {
+        format = " [$symbol$branch]($style)";
+        style = "bold green";
+      };
+
+      git_status = {
+        format = "[$all_status$ahead_behind]($style) ";
+        style = "bold red";
+      };
+
+      character = {
+        success_symbol = "[»](bold yellow)";
+        error_symbol = "[»](bold red)";
+        vimcmd_symbol = "[«](bold yellow)";
+      };
+    };
+  };
+
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableCompletion = true;
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" ];
-      theme = "tjkirch";
-    };
 
     shellAliases = {
       # macOS-specific

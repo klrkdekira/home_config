@@ -107,6 +107,55 @@ in
     };
   };
 
+  programs.starship = {
+    enable = true;
+    settings = {
+      format = "$time $username$hostname $directory$git_branch$git_status\n$character";
+
+      time = {
+        disabled = false;
+        format = "[$time]($style)";
+        style = "bold yellow";
+        time_format = "%H:%M:%S";
+      };
+
+      username = {
+        show_always = true;
+        format = "[$user]($style)";
+        style_user = "bold cyan";
+        style_root = "bold red";
+      };
+
+      hostname = {
+        ssh_only = false;
+        format = "@[$hostname]($style)";
+        style = "bold cyan";
+      };
+
+      directory = {
+        truncation_length = 3;
+        truncate_to_repo = false;
+        style = "bold blue";
+      };
+
+      git_branch = {
+        format = " [$symbol$branch]($style)";
+        style = "bold green";
+      };
+
+      git_status = {
+        format = "[$all_status$ahead_behind]($style) ";
+        style = "bold red";
+      };
+
+      character = {
+        success_symbol = "[»](bold yellow)";
+        error_symbol = "[»](bold red)";
+        vimcmd_symbol = "[«](bold yellow)";
+      };
+    };
+  };
+
   # Shell
   programs.zsh = {
     enable = true;
@@ -115,12 +164,6 @@ in
 
     syntaxHighlighting.enable = true;
     autosuggestion.enable = true;
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" ];
-      theme = "tjkirch";
-    };
 
     # Aliases
     shellAliases = {
@@ -145,4 +188,3 @@ in
     '';
   };
 }
-
