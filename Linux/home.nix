@@ -110,19 +110,19 @@ in
   programs.starship = {
     enable = true;
     settings = {
-      format = "$time $username$hostname $directory$git_branch$git_status\n$character";
+      format = "$time $username$hostname $directory$git_branch$git_status$cmd_duration\n$character";
 
       time = {
         disabled = false;
-        format = "[$time]($style)";
-        style = "bold yellow";
+        format = "[\\[$time\\]]($style)";
+        style = "dimmed white";
         time_format = "%H:%M:%S";
       };
 
       username = {
         show_always = true;
         format = "[$user]($style)";
-        style_user = "bold cyan";
+        style_user = "bold green";
         style_root = "bold red";
       };
 
@@ -135,23 +135,38 @@ in
       directory = {
         truncation_length = 3;
         truncate_to_repo = false;
-        style = "bold blue";
+        style = "yellow";
+        read_only = "🔒";
       };
 
       git_branch = {
-        format = " [$symbol$branch]($style)";
-        style = "bold green";
+        format = "[$symbol$branch]($style)";
+        symbol = "";
+        style = "purple";
       };
 
       git_status = {
-        format = "[$all_status$ahead_behind]($style) ";
-        style = "bold red";
+        format = "[$all_status$ahead_behind]($style)";
+        style = "red";
+        ahead = "⇡$count";
+        behind = "⇣$count";
+        diverged = "⇕⇡$ahead_count⇣$behind_count";
+        modified = "!$count";
+        untracked = "?$count";
+        staged = "+$count";
+        deleted = "✘$count";
+      };
+
+      cmd_duration = {
+        min_time = 2000;
+        format = "[$duration]($style)";
+        style = "yellow";
       };
 
       character = {
-        success_symbol = "[»](bold yellow)";
+        success_symbol = "[»](bold green)";
         error_symbol = "[»](bold red)";
-        vimcmd_symbol = "[«](bold yellow)";
+        vimcmd_symbol = "[«](bold purple)";
       };
     };
   };

@@ -180,43 +180,43 @@ in
       time = {
         disabled = false;
         format = "[$time]($style)";
-        style = "bold yellow";
+        style = "";
         time_format = "%H:%M:%S";
       };
 
       username = {
         show_always = true;
         format = "[$user]($style)";
-        style_user = "bold cyan";
-        style_root = "bold red";
+        style_user = "";
+        style_root = "";
       };
 
       hostname = {
         ssh_only = false;
         format = "@[$hostname]($style)";
-        style = "bold cyan";
+        style = "";
       };
 
       directory = {
         truncation_length = 3;
         truncate_to_repo = false;
-        style = "bold blue";
+        style = "";
       };
 
       git_branch = {
         format = " [$symbol$branch]($style)";
-        style = "bold green";
+        style = "";
       };
 
       git_status = {
         format = "[$all_status$ahead_behind]($style) ";
-        style = "bold red";
+        style = "";
       };
 
       character = {
-        success_symbol = "[»](bold yellow)";
-        error_symbol = "[»](bold red)";
-        vimcmd_symbol = "[«](bold yellow)";
+        success_symbol = "»";
+        error_symbol = "»";
+        vimcmd_symbol = "«";
       };
     };
   };
