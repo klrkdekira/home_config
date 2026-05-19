@@ -14,6 +14,7 @@ in
 
   # Packages
   home.packages = with pkgs; [
+    nerd-fonts.meslo-lg
     dust
     ripgrep
     xcp
@@ -110,19 +111,20 @@ in
   programs.starship = {
     enable = true;
     settings = {
-      format = "$time $username$hostname $directory$git_branch$git_status\n$character";
+      format = "$username$hostname $directory$git_branch$git_status$nix_shell$golang$python$nodejs$zig$cmd_duration\n$character";
+      right_format = "$time";
 
       time = {
         disabled = false;
-        format = "[$time]($style)";
-        style = "bold yellow";
+        format = "[\\[$time\\]]($style)";
+        style = "dimmed white";
         time_format = "%H:%M:%S";
       };
 
       username = {
         show_always = true;
         format = "[$user]($style)";
-        style_user = "bold cyan";
+        style_user = "bold green";
         style_root = "bold red";
       };
 
@@ -135,23 +137,72 @@ in
       directory = {
         truncation_length = 3;
         truncate_to_repo = false;
-        style = "bold blue";
+        truncation_symbol = "…/";
+        style = "bold yellow";
+        home_symbol = " ~";
+        read_only = " ";
+        read_only_style = "red";
       };
 
       git_branch = {
-        format = " [$symbol$branch]($style)";
-        style = "bold green";
+        format = "on [$symbol$branch]($style)";
+        symbol = " ";
+        style = "bold purple";
+        truncation_length = 30;
       };
 
       git_status = {
-        format = "[$all_status$ahead_behind]($style) ";
+        format = "([\\[$all_status$ahead_behind\\]]($style)) ";
         style = "bold red";
+        ahead = "↡$count";
+        behind = "↣$count";
+        diverged = "⇅↡$ahead_count↣$behind_count";
+        modified = "~$count";
+        untracked = "?$count";
+        staged = "+$count";
+        deleted = "-$count";
+        conflicted = "=$count";
+        stashed = "$count";
+      };
+
+      nix_shell = {
+        format = "[$symbol$state]($style) ";
+        symbol = " ";
+        style = "bold blue";
+        impure_msg = "impure";
+        pure_msg = "pure";
+      };
+
+      golang = {
+        format = "[$symbol$version]($style) ";
+        style = "bold cyan";
+      };
+
+      python = {
+        format = "[$symbol$version]($style) ";
+        style = "bold yellow";
+      };
+
+      nodejs = {
+        format = "[$symbol$version]($style) ";
+        style = "bold green";
+      };
+
+      zig = {
+        format = "[$symbol$version]($style) ";
+        style = "bold yellow";
+      };
+
+      cmd_duration = {
+        min_time = 2000;
+        format = "took [ $duration]($style)";
+        style = "yellow";
       };
 
       character = {
-        success_symbol = "[»](bold yellow)";
-        error_symbol = "[»](bold red)";
-        vimcmd_symbol = "[«](bold yellow)";
+        success_symbol = "[❯](bold green)";
+        error_symbol = "[❯](bold red)";
+        vimcmd_symbol = "[❮](bold purple)";
       };
     };
   };
