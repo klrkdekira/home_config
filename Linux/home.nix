@@ -9,6 +9,8 @@ in
   home.homeDirectory = "/home/klrkdekira";
   home.stateVersion = "25.11";
 
+  manual.manpages.enable = false;
+
   # XDG
   xdg.enable = true;
 
@@ -29,6 +31,7 @@ in
     zig
     # zls
     uv
+    zstd
   ];
 
   home.file = { };
@@ -212,6 +215,7 @@ in
     enable = true;
     enableCompletion = true;
     dotDir = "${config.xdg.configHome}/zsh";
+    historySubstringSearch.enable = true;
 
     syntaxHighlighting.enable = true;
     autosuggestion.enable = true;

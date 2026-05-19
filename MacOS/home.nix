@@ -17,6 +17,7 @@ in
 
   # Package installation
   home.packages = with pkgs; [
+    nerd-fonts.meslo-lg
     # Modern CLI replacements
     dust # du replacement
     ripgrep # grep replacement
@@ -76,6 +77,7 @@ in
   # Environment configuration
   home.sessionVariables = {
     EDITOR = "emacs";
+    ZSH_DISABLE_COMPFIX = "true";
     TERM = "xterm-256color";
 
     # Go
@@ -119,7 +121,7 @@ in
 
   programs.java = {
     enable = true;
-    package = pkgs.temurin-jre-bin-17;
+    package = pkgs.temurin-jre-bin-21;
   };
 
   programs.git = {
@@ -160,11 +162,15 @@ in
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    defaultCommand = "fd --type f";
+    changeDirWidgetCommand = "fd --type d";
+    fileWidgetCommand = "fd --type f";
   };
 
   programs.eza = {
     enable = true;
     enableZshIntegration = true;
+    enableBashIntegration = true;
     git = true;
     icons = "auto";
   };
@@ -179,75 +185,109 @@ in
   programs.starship = {
     enable = true;
     settings = {
-      format = "$status\n$username$hostname$directory$git_branch$git_status$time\n$character";
-      add_newline = false;
+      format = "$username$hostname $directory$git_branch$git_status$nix_shell$golang$python$nodejs$zig$cmd_duration\n$character";
+      right_format = "$time";
 
       time = {
         disabled = false;
-        format = " [\\[$time\\]]($style)";
-        style = "#A6E22E";
+        format = "[\\[$time\\]]($style)";
+        style = "dimmed white";
         time_format = "%H:%M:%S";
       };
 
       username = {
         show_always = true;
         format = "[$user]($style)";
-        style_user = "bold #FD971F";
-        style_root = "bold #F92672";
+        style_user = "bold green";
+        style_root = "bold red";
       };
 
       hostname = {
         ssh_only = false;
-        format = "@[$hostname]($style): ";
-        style = "bold #E6DB74";
+        format = "@[$hostname]($style)";
+        style = "bold cyan";
       };
 
       directory = {
         truncation_length = 3;
         truncate_to_repo = false;
-        style = "bold #66D9EF";
-        format = "[$path]($style)[$read_only]($read_only_style)";
+        truncation_symbol = "…/";
+        style = "bold yellow";
+        home_symbol = " ~";
+        read_only = " ";
+        read_only_style = "red";
       };
 
       git_branch = {
-        format = " [$symbol$branch]($style)";
-        style = "bold #A6E22E";
+        format = "on [$symbol$branch]($style)";
+        symbol = " ";
+        style = "bold purple";
+        truncation_length = 30;
       };
 
       git_status = {
-        format = "[$all_status$ahead_behind]($style)";
-        style = "bold #F92672";
-        modified = " ⚡";
-        untracked = " ?";
-        staged = " +";
-        deleted = " ✘";
-        conflicted = " !";
-        ahead = " ↑\${count}";
-        behind = " ↓\${count}";
-        diverged = " ↕\${count}";
-        stashed = "";
-        renamed = "";
+        format = "([\\[$all_status$ahead_behind\\]]($style)) ";
+        style = "bold red";
+        ahead = "↡$count";
+        behind = "↣$count";
+        diverged = "⇅↡$ahead_count↣$behind_count";
+        modified = "~$count";
+        untracked = "?$count";
+        staged = "+$count";
+        deleted = "-$count";
+        conflicted = "=$count";
+        stashed = "$count";
       };
 
-      status = {
-        disabled = false;
-        format = "[FAIL: $status](bold #F92672)\n";
+      nix_shell = {
+        format = "[$symbol$state]($style) ";
+        symbol = " ";
+        style = "bold blue";
+        impure_msg = "impure";
+        pure_msg = "pure";
+      };
+
+      golang = {
+        format = "[$symbol$version]($style) ";
+        style = "bold cyan";
+      };
+
+      python = {
+        format = "[$symbol$version]($style) ";
+        style = "bold yellow";
+      };
+
+      nodejs = {
+        format = "[$symbol$version]($style) ";
+        style = "bold green";
+      };
+
+      zig = {
+        format = "[$symbol$version]($style) ";
+        style = "bold yellow";
+      };
+
+      cmd_duration = {
+        min_time = 2000;
+        format = "took [ $duration]($style)";
+        style = "yellow";
       };
 
       character = {
-        success_symbol = "[\\$](bold #E6DB74)";
-        error_symbol = "[\\$](bold #F92672)";
-        vimcmd_symbol = "[«](bold #AE81FF)";
+        success_symbol = "[❯](bold green)";
+        error_symbol = "[❯](bold red)";
+        vimcmd_symbol = "[❮](bold purple)";
       };
     };
   };
 
   programs.zsh = {
     enable = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
     enableCompletion = true;
     historySubstringSearch.enable = true;
+
+    syntaxHighlighting.enable = true;
+    autosuggestion.enable = true;
 
     shellAliases = {
       # macOS-specific
