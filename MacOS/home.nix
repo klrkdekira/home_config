@@ -33,6 +33,9 @@ in
     rsync
     coreutils
     cmake
+
+    # Coding agents
+    pi-coding-agent
     opencode
 
     # Development tools
@@ -68,7 +71,6 @@ in
     curl
     nmap
     wget
-
   ];
 
   # Environment configuration
@@ -145,7 +147,9 @@ in
     enable = true;
     enableZshIntegration = true;
     nix-direnv.enable = true; # cached nix shell evaluation
-    package = pkgs.direnv.overrideAttrs (_: { doCheck = false; });
+    package = pkgs.direnv.overrideAttrs (_: {
+      doCheck = false;
+    });
   };
 
   programs.zoxide = {
@@ -175,48 +179,65 @@ in
   programs.starship = {
     enable = true;
     settings = {
-      format = "$time $username$hostname $directory$git_branch$git_status\n$character";
+      format = "$status\n$username$hostname$directory$git_branch$git_status$time\n$character";
+      add_newline = false;
 
       time = {
         disabled = false;
-        format = "[$time]($style)";
-        style = "bold yellow";
+        format = " [\\[$time\\]]($style)";
+        style = "#A6E22E";
         time_format = "%H:%M:%S";
       };
 
       username = {
         show_always = true;
         format = "[$user]($style)";
-        style_user = "bold cyan";
-        style_root = "bold red";
+        style_user = "bold #FD971F";
+        style_root = "bold #F92672";
       };
 
       hostname = {
         ssh_only = false;
-        format = "@[$hostname]($style)";
-        style = "bold cyan";
+        format = "@[$hostname]($style): ";
+        style = "bold #E6DB74";
       };
 
       directory = {
         truncation_length = 3;
         truncate_to_repo = false;
-        style = "bold blue";
+        style = "bold #66D9EF";
+        format = "[$path]($style)[$read_only]($read_only_style)";
       };
 
       git_branch = {
         format = " [$symbol$branch]($style)";
-        style = "bold green";
+        style = "bold #A6E22E";
       };
 
       git_status = {
-        format = "[$all_status$ahead_behind]($style) ";
-        style = "bold red";
+        format = "[$all_status$ahead_behind]($style)";
+        style = "bold #F92672";
+        modified = " ⚡";
+        untracked = " ?";
+        staged = " +";
+        deleted = " ✘";
+        conflicted = " !";
+        ahead = " ↑\${count}";
+        behind = " ↓\${count}";
+        diverged = " ↕\${count}";
+        stashed = "";
+        renamed = "";
+      };
+
+      status = {
+        disabled = false;
+        format = "[FAIL: $status](bold #F92672)\n";
       };
 
       character = {
-        success_symbol = "[»](bold yellow)";
-        error_symbol = "[»](bold red)";
-        vimcmd_symbol = "[«](bold yellow)";
+        success_symbol = "[\\$](bold #E6DB74)";
+        error_symbol = "[\\$](bold #F92672)";
+        vimcmd_symbol = "[«](bold #AE81FF)";
       };
     };
   };
@@ -226,6 +247,7 @@ in
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableCompletion = true;
+    historySubstringSearch.enable = true;
 
     shellAliases = {
       # macOS-specific
